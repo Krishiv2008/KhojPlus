@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khoj Plus</title>
+    <link rel="shortcut icon" href="khoj.png">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="modal show" id="langModal" tabindex="-1" style="display: block;background-color: rgba(240, 248, 255, 0);">
+        <div class="modal-dialog modal-dialog-centered" >
+            <div class="modal-content" style="height: 50vh; text-align: center;justify-content:space-around;">
+                <h1>Please select Your Language</h1>
+                <select id="langSelect" class="form-select mt-3 mb-3" style="height: 10vh;font-size: 1.3rem;">
+                    <option value="unselected" selected>Choose an option</option>
+                    <option value="hindi">हिंदी</option>
+                    <option value="punjabi">ਪੰਜਾਬੀ</option>
+                </select>
+                <button class="btn mt-3"style="font-size:1.5rem;color:rgb(247, 212, 72);background:rgb(31, 40, 71);" onclick="selectLanguage()">Continue</button>
+            </div>
+        </div>
+    </div>
+<nav class="navbar d-none glass-navbar position-relative" id="nav">
+    <div class="container-fluid">
+      <span class="navbar-brand mx-auto centered-brand">Khoj+</span>
+    </div>
+  </nav>
+
+<div class="container d-none" id="mainApp">
+    <h2 class="text-center" id="appTitle">कोड अभ्यास - Python, Java, C#</h2>
+    <p class=" text-center" id="appDesc">यह प्रोग्राम आपसे पंजाबी में कोडिंग से जुड़े सवाल पूछेगा। यह आपके जवाब की जांच करेगा और आपको फीडबैक देगा</p>
+    <div class="mb-3">
+    <button class="cool-button" id="getq" onclick="getQuestion()"><span>🎲 नया सवाल लें</span></button>
+  </div>
+
+   <div id="questionSpinner" class="text-center d-none mb-3">
+    <div class="spinner-border" role="status"></div>
+    <p class="mt-2" id="qbr">सवाल लाया जा रहा है...</p>
+  </div>
+
+  <div id="questionBox" class="d-none" style="padding-inline: 5vw;margin-block: 5vh;"></div>
+
+  <div class="mb-3">
+    <label for="languageCode" id="fla" class="form-label">👨‍💻 कोडिंग भाषा</label>
+    <select id="languageCode" class="form-select" style="height: 10vh;font-size: 1.3rem;color: white;border: 2px solid rgb(247, 212, 72);background-color: rgb(21,32,55);">
+      <option>Python</option>
+      <option>Java</option>
+      <option>C#</option>
+    </select>
+  </div>
+   <div class="mb-3">
+    <label for="codeArea" id="cda" class="form-label">👇 कोड लिखें</label>
+    <textarea id="codeArea" class="form-control" rows="8" style="background-color: rgb(21,32,55);color: green;"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <button class="cool-button" onclick="evaluateCode()" id="evalc"><span>🧪 जांचें</span></button>
+  </div>
+
+  <div id="evalSpinner" class="text-center d-none mb-3">
+    <div class="spinner-border" role="status"></div>
+    <p class="mt-2" id="evalsp">AI मूल्यांकन कर रहा है...</p>
+  </div>
+
+  <div id="resultBox" class="d-none"></div>
+</div>
+
+</body>
+<script>
+    let k = "";
+    let model="deepseek/deepseek-chat-v3-0324:free"
+    let selectedLang=null;
+
+  async function loadk() {
+  try {
+    const res = await fetch("file.txt");
+    if (res.ok) {
+      k = ((await res.text()).trim());
+      
+    } else {
+      console.error("❌ Failed to load API key file.");
+    }
+  } catch (err) {
+    console.error("⚠️ Error loading API key:", err);
+  }
+}
+
+// Call this function once at page load
+loadk();
+
+    function selectLanguage(){
+        const lang=document.getElementById("langSelect").value;
+        if(lang==="hindi"||lang==="punjabi"){
+            selectedLang=lang;
+            document.getElementById("langModal").style.display = "none";
+            document.getElementById("mainApp").classList.remove("d-none");
+            document.getElementById("nav").classList.remove("d-none");
+        
+        if (lang === "punjabi") {
+        document.getElementById("appTitle").innerText = "ਕੋਡ ਅਭਿਆਸ - Python, Java, C#";
+        document.getElementById("qbr").innerText="ਇੱਕ ਨਵਾਂ ਸਵਾਲ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+        document.getElementById("getq").innerText="ਇੱਕ ਨਵਾਂ ਸਵਾਲ ਪ੍ਰਾਪਤ ਕਰੋ";
+        document.getElementsByClassName("fla").innerText="ਕੋਡਿੰਗ ਭਾਸ਼ਾ:";
+        document.getElementById("cda").innerText="ਕੋਡਿੰਗ ਖੇਤਰ:";
+        document.getElementById("evalc").innerText="ਚੈੱਕ ਕਰੋ";
+        document.getElementById("evalsp").innerText="AI ਮੁਲਾਂਕਣ ਕਰ ਰਿਹਾ ਹੈ";
+        document.getElementById("appDesc").innerText = "ਇਹ ਪ੍ਰੋਗਰਾਮ ਤੁਹਾਨੂੰ ਪੰਜਾਬੀ ਵਿੱਚ ਕੋਡਿੰਗ ਸਵਾਲ ਪੁੱਛੇਗਾ। ਇਹ ਤੁਹਾਡੇ ਜਵਾਬ ਦੀ ਜਾਂਚ ਕਰੇਗਾ ਅਤੇ ਤੁਹਾਨੂੰ ਫੀਡਬੈਕ ਦੇਵੇਗਾ।";
+        model="deepseek/deepseek-chat-v3-0324:free"
+      }
+        
+    }
+}
+async function getQuestion() {
+    document.getElementById("questionSpinner").classList.remove("d-none");
+    document.getElementById("questionBox").classList.add("d-none");
+
+    const prompt = selectedLang === "punjabi"
+      ? "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਦਰਮਿਆਨਾ ਪੱਧਰ ਦਾ ਕੋਡਿੰਗ ਸਵਾਲ ਸਿਰਫ਼ ਪੰਜਾਬੀ ਵਿੱਚ ਦਿਓ। ਸਵਾਲ ਸਾਫ਼ ਅਤੇ ਸਧਾਰਨ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ। ਕੋਈ ਜਵਾਬ, ਵਿਵਰਣ ਜਾਂ ਖਾਸ ਚਿੰਨ੍ਹ ਨਾ ਦਿਓ।\n\nਫਾਰਮੈਟ ਇਹ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ:\nਸਵਾਲ:\n[ਇੱਥੇ ਸਵਾਲ ਲਿਖੋ]\n\nਉਦਾਹਰਨ:\nਇਨਪੁੱਟ: [ਇੱਥੇ ਇਨਪੁੱਟ]\nਆਉਟਪੁੱਟ: [ਇੱਥੇ ਆਉਟਪੁੱਟ]"
+      : 'कृपया एक मध्यम स्तर का प्रोग्रामिंग सवाल केवल हिंदी में दें। सवाल स्पष्ट और संक्षिप्त होना चाहिए। कोई उत्तर, स्पष्टीकरण या विशेष चिन्ह न दें। \n प्रारूप इस तरह हो: \n सवाल: \n [यहाँ सवाल लिखें] \n उदाहरण: \nइनपुट: [यहाँ इनपुट] \n आउटपुट: [यहाँ आउटपुट]';
+    console.log(prompt)
+    const payload = {
+      model: model,
+      messages: [{ role: "user", content: prompt }]
+    };
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${k}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    
+      if (res.ok) {
+      const json = await res.json();
+      const question = json.choices[0].message.content.replace(/[\*_~`#>]/g, "").trim();
+      document.getElementById("questionSpinner").classList.add("d-none");
+      document.getElementById("questionBox").innerText = question;
+      console.log(question)
+      document.getElementById("questionBox").classList.remove("d-none");
+    } else {
+      alert("AI से सवाल प्राप्त नहीं हो सका।");
+    }
+}
+
+
+  async function evaluateCode() {
+    model="deepseek/deepseek-chat-v3-0324:free";
+    document.getElementById("evalSpinner").classList.remove("d-none");
+    document.getElementById("resultBox").classList.remove("d-none");
+
+    const question = document.getElementById("questionBox").innerText;
+    const codeLang = document.getElementById("languageCode").value;
+    const code= document.getElementById("codeArea").value;
+
+const prompt = 
+`प्रश्न (${codeLang} में):\n${question}
+
+उपयोगकर्ता का उत्तर:
+${code}
+
+कृपया नीचे दिए गए बिंदुओं के आधार पर इस उत्तर का मूल्यांकन करें:
+
+1. क्या कोड लॉजिक से सवाल को सही तरीके से हल करता है?
+2. क्या कोड सभी कोनों (edge cases) को सही से संभालता है (जैसे खाली इनपुट)?
+3. क्या सिंटैक्स या इंडेंटेशन में कोई त्रुटि है?
+4. क्या कोड पढ़ने योग्य और सुव्यवस्थित है?
+
+कृपया **सिर्फ फीडबैक दें** और कोई सही कोड न लिखें। जवाब केवल ${selectedLang} भाषा में दें। कृपया *, **, > जैसे चिह्नों का उपयोग न करें। 
+
+यदि कोड Python है, तो इंडेंटेशन और error handling की जांच करें।  
+यदि कोड Java या C# है, तो braces और structure की सावधानीपूर्वक समीक्षा करें।`;
+
+    const payload={
+      model: model,
+      messages:[{role:"user", content:prompt}]
+    };
+     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${k}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+const answer = json.choices[0].message.content.replace(/[\*_~`#>]/g, "").trim();
+document.getElementById("resultBox").innerText = answer;
+document.getElementById("resultBox").classList.remove("d-none");
+
+    if (res.ok) {
+      document.getElementById("evalSpinner").classList.add("d-none");
+
+      const answer = json.choices[0].message.content.replace(/[\*_~`#>]/g, "").trim();
+      document.getElementById("resultBox").innerText = answer;
+      document.getElementById("resultBox").classList.remove("d-none");
+    } else {
+      let error= selectedLang=="hindi"?"AI से उत्तर नहीं मिला।":"AI ਕੋਲ ਕੋਈ ਜਵਾਬ ਨਹੀਂ ਹੈ।";
+      alert(error);
+    }
+  }
+    
+</script>
+</html>

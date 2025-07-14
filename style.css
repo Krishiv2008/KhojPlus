@@ -1,0 +1,95 @@
+   body{
+            background-color: rgb(17, 23, 42);
+        }
+        .container{
+            max-width: 80vw;
+            margin-top: 5vh;
+            color: white;
+        }
+      .spinner-border { width: 3rem; height: 3rem; }
+        .d-none{
+            display: none;
+        }
+        .glass-navbar {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.05);
+      height: 7vh;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.689);
+      -webkit-backdrop-filter: blur(12px);
+      position: absolute;
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .centered-brand {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+    }
+        #langModal .modal-content { text-align: center; padding: 20px;
+        backdrop-filter: blur(10px);box-shadow:10px 10px 10px rgba(0, 0, 0, 0.731); }
+    
+.cool-button {
+    margin-top: 5vh;
+      position: relative;
+      padding: 12px 32px;
+      background: rgba(0, 108, 184, 0.1);
+      color: white;
+      border: 2px solid rgb(247, 212, 72);
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 100%;
+      text-transform: uppercase;
+      box-shadow: 5px 5px 5px black;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .cool-button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle, rgba(23, 170, 255, 0.3), transparent 60%);
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.4s ease-out;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .cool-button:hover::before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .cool-button:hover {
+      border-color: rgb(31, 40, 71);
+      color: rgb(247, 212, 72);
+      background: rgb(31, 40, 71);
+    }
+
+    .cool-button span {
+      position: relative;
+      z-index: 1;
+    }
+#questionBox{
+  border: 2px solid rgb(247, 212, 72);
+        background: radial-gradient(circle, rgba(23, 170, 255, 0.3), transparent 60%);
+
+}
+
+#resultBox{
+   border: 2px solid rgb(247, 212, 72);
+        background: radial-gradient(circle, rgba(23, 170, 255, 0.3), transparent 60%);
+  color: white;
+}
