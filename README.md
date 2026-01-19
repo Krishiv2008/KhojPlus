@@ -3,7 +3,7 @@ Try it out at: [https://khojplus.netlify.app](https://khojplus.netlify.app)
 
 KhojPlus is an AI tool that enables coders to practice coding in Python, Java, and C#. It provides practice questions and Feedback in Hindi or Punjabi, eliminating the language barrier.
 
-The tool is built on Deepseek-V3-0324 and requires an API KEY. 
+The tool is built on Deepseek-R1-0528 and requires an API KEY. 
 
 
 
